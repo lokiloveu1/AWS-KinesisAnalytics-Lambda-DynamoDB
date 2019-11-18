@@ -1,0 +1,16 @@
+--SQL in Kinesis Analytics
+
+CREATE OR REPLACE STREAM "DESTINATION_SQL_STREAM" ("sensorId" INTEGER, "currentTemperature" INTEGER, "status" varchar(4),"PARTITION_KEY" varchar(512));
+CREATE OR REPLACE STREAM "IN_STREAM"("sensorId" INTEGER, "currentTemperature" INTEGER, "status" varchar(4));
+
+CREATE OR REPLACE PUMP "STREAM_PUMP2" AS INSERT INTO "IN_STREAM"
+SELECT STREAM "sensorId","currentTemperature", "status"
+FROM "SOURCE_SQL_STREAM_001";
+
+CREATE OR REPLACE PUMP "STREAM_PUMP" AS INSERT INTO "DESTINATION_SQL_STREAM"
+SELECT STREAM "sensorId","currentTemperature", "status","PARTITION_KEY"
+FROM "SOURCE_SQL_STREAM_001";
+--FROM (SELECT STREAM "sensorId" from "IN_STREAM");
+--WHERE "sensorId" IN (SELECT "sensorId" from "IN_STREAM");
+
+--SELECT "sensorId" from "IN_STREAM";
